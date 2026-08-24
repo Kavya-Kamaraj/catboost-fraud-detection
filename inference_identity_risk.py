@@ -7,7 +7,6 @@ from catboost import CatBoostClassifier, Pool
 
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_MODEL_PATH = BASE_DIR / "models" / "catboost_identity_risk_model.cbm"
-DEFAULT_INPUT_PATH = BASE_DIR / "dataset" / "identity_risk_train.csv"
 DEFAULT_OUTPUT_PATH = BASE_DIR / "outputs" / "inference_predictions.csv"
 DEFAULT_THRESHOLD = 0.55
 
@@ -63,7 +62,7 @@ def parse_args() -> argparse.Namespace:
     """Read command-line options."""
     parser = argparse.ArgumentParser(description="Run CatBoost inference on a CSV file.")
     parser.add_argument("--model-path", type=Path, default=DEFAULT_MODEL_PATH)
-    parser.add_argument("--input-path", type=Path, default=DEFAULT_INPUT_PATH)
+    parser.add_argument("--input-path", type=Path, required=True)
     parser.add_argument("--output-path", type=Path, default=DEFAULT_OUTPUT_PATH)
     parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     return parser.parse_args()

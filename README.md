@@ -1,13 +1,11 @@
 # Identity Risk CatBoost Model
 
-This project trains a CatBoost binary classification model using identity risk and identity match features. The package includes a cleaned dataset, a notebook version of the training workflow, command-line scripts for training/evaluation/inference, and a simple flowchart.
+This project trains a CatBoost binary classification model using identity risk and identity match features. The package includes a notebook version of the training workflow, command-line scripts for training/evaluation/inference, saved model artifacts, and a simple flowchart.
 
 ## Project Structure
 
 ```text
 identity_risk_catboost_public/
-├── dataset/
-│   └── identity_risk_train.csv
 ├── models/
 │   └── catboost_identity_risk_model.cbm
 ├── outputs/
@@ -20,29 +18,7 @@ identity_risk_catboost_public/
 └── train_identity_risk_catboost.py
 ```
 
-## Dataset
-
-The training file is:
-
-```text
-dataset/identity_risk_train.csv
-```
-
-The model trains only on these identity-provider features:
-
-```text
-identity_name_risk_level
-phone_risk_level
-address_risk_level
-phone_email_match
-phone_dob_match
-phone_city_match
-phone_zipcode_match
-phone_state_match
-phone_name_match
-phone_address_match
-overall_identity_risk_level
-```
+## Input Schema
 
 The target column is:
 
@@ -51,6 +27,8 @@ target_label
 ```
 
 Accepted target values include `Y`, `N`, `1`, `0`, `true`, `false`, `yes`, and `no`. They are normalized to `Y` and `N` during training and evaluation.
+
+Training, evaluation, and inference inputs must use the same feature schema as the trained CatBoost model.
 
 ## Install Requirements
 
@@ -71,7 +49,7 @@ python train_identity_risk_catboost.py
 The script will:
 
 ```text
-load dataset -> clean labels/text -> split train/test -> train CatBoost -> print AUC/accuracy -> save model
+load input data -> clean labels/text -> split train/test -> train CatBoost -> print AUC/accuracy -> save model
 ```
 
 The saved model path is:
@@ -114,18 +92,12 @@ The threshold graph shows the trade-off between false negatives, false positives
 
 ## Run Inference
 
-Run inference with the default dataset:
-
-```bash
-python inference_identity_risk.py
-```
-
-Or pass custom paths:
+Run inference on a CSV that matches the trained model feature schema:
 
 ```bash
 python inference_identity_risk.py \
   --model-path models/catboost_identity_risk_model.cbm \
-  --input-path dataset/identity_risk_train.csv \
+  --input-path path/to/input.csv \
   --output-path outputs/inference_predictions.csv \
   --threshold 0.55
 ```
@@ -158,11 +130,10 @@ FLOWCHART.md
 High-level flow:
 
 ```text
-Dataset CSV -> Clean Data -> Feature Split -> Train/Test Split -> CatBoost Training -> Model Save -> Evaluation/Inference
+Input CSV -> Clean Data -> Feature Split -> Train/Test Split -> CatBoost Training -> Model Save -> Evaluation/Inference
 ```
 
 ## Notes
 
-- Metadata columns such as record IDs and timestamps are excluded from model training.
 - Only identity risk and identity match columns are used as model features.
 - Evaluation and inference scripts read the trained model feature schema directly from the `.cbm` file.
